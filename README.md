@@ -1,6 +1,7 @@
+# WIP
 ## Stack
 
-This stack holds some soltutions which were solved during development.
+This stack will holds monorepo for projects migrated from GitLab.
 
 ## List
-- [development](./development/) &larr; Hold list of packages/tools/languages which had some issues.
+- [development](./development/) &larr; Hold list of packages/tools/languages with setupfor mTLS.
