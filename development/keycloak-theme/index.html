@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Login Screen</title>
+<style>
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+
+    body {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        overflow: hidden;
+    }
+
+    .login-container {
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
+        padding: 40px;
+        border-radius: 20px;
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+        width: 100%;
+        max-width: 400px;
+        opacity: 0;
+        transform: translateY(20px);
+        transition: all 0.8s ease;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .login-container.fade-in {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    .logo { text-align: center; margin-bottom: 30px; }
+    .logo h1 { color: #fff; font-size: 2.5em; text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3); }
+
+    .input-group { margin-bottom: 20px; }
+    .input-group input {
+        width: 100%;
+        padding: 15px 20px;
+        border: none;
+        border-radius: 50px;
+        background: rgba(255, 255, 255, 0.2);
+        color: #fff;
+        font-size: 16px;
+        outline: none;
+        transition: all 0.3s ease;
+    }
+    .input-group input::placeholder { color: rgba(255, 255, 255, 0.7); }
+    .input-group input:focus {
+        background: rgba(255, 255, 255, 0.3);
+        box-shadow: 0 0 15px rgba(245, 40, 145, 0.5);
+    }
+
+    /* Sign-In button style should match rest of login page  */
+    .login-btn {
+        width: 100%;
+        padding: 15px;
+        border: none;
+        border-radius: 50px;
+        background: linear-gradient(45deg, #f52891, #667eea);
+        color: white;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-top: 10px;
+        box-shadow: none;
+    }
+    .login-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+        background: linear-gradient(45deg, #ff2b9b, #768ff1);
+    }
+    .login-btn:active { transform: translateY(0); }
+
+    .additional-links { text-align: center; margin-top: 20px; }
+    .additional-links a {
+        color: rgba(255, 255, 255, 0.8);
+        text-decoration: none;
+        font-size: 14px;
+        transition: color 0.3s ease;
+    }
+    .additional-links a:hover { color: #fff; text-decoration: underline; }
+
+    .particles {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: -1;
+    }
+    .particle {
+        position: absolute;
+        background: rgba(255, 255, 255, 0.3);
+        border-radius: 50%;
+        animation: float 6s infinite ease-in-out;
+    }
+    @keyframes float {
+        0%, 100% { transform: translateY(0) rotate(0deg); opacity: 0.5; }
+        50% { transform: translateY(-20px) rotate(180deg); opacity: 0.8; }
+    }
+</style>
+</head>
+<body>
+<div class="particles" id="particles"></div>
+
+<div class="login-container" id="loginContainer">
+    <div class="logo"><h1>Welcome</h1></div>
+
+    <form id="loginForm">
+        <div class="input-group">
+            <input type="text" id="username" placeholder="Username" required>
+        </div>
+        <div class="input-group">
+            <input type="password" id="password" placeholder="Password" required>
+        </div>
+
+        <!-- Add Sign-In button as it's used for master login on Keycloak-->
+        <button type="submit" class="login-btn">Sign In</button>
+    </form>
+
+    <div class="additional-links">
+        <a href="#">Forgot Password?</a>
+        <span style="color: rgba(255,255,255,0.6)"> | </span>
+        <a href="#">Create Account</a>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const loginContainer = document.getElementById('loginContainer');
+    setTimeout(() => loginContainer.classList.add('fade-in'), 300);
+
+    const particlesContainer = document.getElementById('particles');
+    for (let i = 0; i < 15; i++) {
+        const p = document.createElement('div');
+        p.classList.add('particle');
+        const size = Math.random() * 20 + 5;
+        p.style.width = p.style.height = `${size}px`;
+        p.style.left = `${Math.random() * 100}%`;
+        p.style.top = `${Math.random() * 100}%`;
+        p.style.animationDelay = `${Math.random() * 5}s`;
+        p.style.animationDuration = `${Math.random() * 3 + 3}s`;
+        const colors = ['rgba(102,126,234,0.4)','rgba(118,75,162,0.4)','rgba(245,40,145,0.4)'];
+        p.style.background = colors[Math.floor(Math.random() * colors.length)];
+        particlesContainer.appendChild(p);
+    }
+
+    document.querySelectorAll('input').forEach(input => {
+        input.addEventListener('focus', () => input.style.boxShadow = '0 0 15px rgba(245,40,145,0.5)');
+        input.addEventListener('blur', () => input.style.boxShadow = 'none');
+    });
+
+    document.getElementById('loginForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const btn = document.querySelector('.login-btn');
+        btn.textContent = 'Logging in...';
+        btn.style.background = 'linear-gradient(45deg, #667eea, #764ba2)';
+
+        setTimeout(() => {
+            btn.textContent = 'Login Successful!';
+            btn.style.background = 'linear-gradient(45deg, #4CAF50, #45a049)';
+            setTimeout(() => {
+                btn.textContent = 'Sign In';
+                btn.style.background = 'linear-gradient(45deg, #f52891, #667eea)';
+            }, 2000);
+        }, 1500);
+    });
+});
+</script>
+</body>
+</html>

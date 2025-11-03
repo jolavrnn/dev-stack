@@ -1,0 +1,61 @@
+services:
+  postgres:
+    container_name: postgres
+    image: postgres:14.19-alpine3.21
+    restart: always
+    hostname: postgres
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: keycloak
+      POSTGRES_PASSWORD: keycloak
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    volumes:
+      - postgres:/var/lib/postgresql/data
+      - ./data/create_db.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - keycloak
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:26.3.5
+    container_name: keycloak
+    # Use custom builder for export using JAR.
+    # command: start-dev --features=quick-theme
+    # Set manually theme from Keycloak UI.
+    # command: start-dev
+    # Start Keycloak with test theme.
+    # https://stackoverflow.com/questions/71286390/set-default-theme-keycloak-17
+    command: start-dev --spi-theme-default=test
+    environment:
+      KC_BOOTSTRAP_ADMIN_USERNAME: admin
+      KC_BOOTSTRAP_ADMIN_PASSWORD: my_superSecureP4ssword
+      KC_DB: postgres
+      KC_DB_URL: jdbc:postgresql://postgres/keycloak
+      KC_DB_USERNAME: keycloak
+      KC_DB_PASSWORD: keycloak
+      KC_HEALTH_ENABLED: "true"
+    depends_on:
+      postgres:
+        condition: service_healthy
+        restart: true
+    ports:
+      - "8080:8080"
+    volumes:
+      - keycloak:/opt/keycloak/data
+      - ./themes/:/opt/keycloak/themes/
+    networks:
+      - keycloak
+
+networks:
+  keycloak:
+    driver: bridge
+
+volumes:
+  postgres:
+    driver: local
+  keycloak:
+    driver: local
